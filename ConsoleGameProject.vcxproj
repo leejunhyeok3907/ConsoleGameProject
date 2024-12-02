@@ -136,15 +136,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleGameProject.cpp" />
+    <ClCompile Include="Functions.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="TimeManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CustomStruct.h" />
+    <ClInclude Include="Enums.h" />
+    <ClInclude Include="Functions.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="TimeManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

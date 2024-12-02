@@ -1,20 +1,9 @@
 #pragma once
 class GameManager
 {
-private:
-	GameManager() = default;
+	SINGLE(GameManager);
 
 public:
-	~GameManager() = default;
-
-public:
-	static GameManager GetInst()
-	{
-		static GameManager Instance;
-
-		return Instance;
-	}
-
 	void Init();
 
 	void Progress();
