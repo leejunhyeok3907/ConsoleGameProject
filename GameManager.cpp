@@ -15,11 +15,11 @@ GameManager::~GameManager()
 
 void GameManager::Progress()
 {
-    unsigned int system_tick = GetTickCount64();
+    ULONGLONG system_tick = GetTickCount64();
 
     while (m_GameLoop)
     {
-        unsigned int CurrentTick = GetTickCount64();
+        ULONGLONG CurrentTick = GetTickCount64();
 
         if (system_tick + m_DelayTime < CurrentTick)
         {
@@ -94,10 +94,10 @@ void GameManager::ClearScreen()
 void GameManager::PrintScreen(int _x, int _y, string _string)
 {
     DWORD dw;
-    COORD CursorPosition = { _x, _y };
+    COORD CursorPosition = { (SHORT)_x, (SHORT)_y };
 
     SetConsoleCursorPosition(m_Screen[m_ScreenIndex], CursorPosition);
-    WriteFile(m_Screen[m_ScreenIndex], _string.c_str(), _string.size(), &dw, NULL);
+    WriteFile(m_Screen[m_ScreenIndex], _string.c_str(), (DWORD)_string.size(), &dw, NULL);
 }
 
 void GameManager::ReleaseScreen()
