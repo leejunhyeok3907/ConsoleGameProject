@@ -11,7 +11,7 @@ private:
 	Object* m_Player;
 
 public:
-	GetSet(wstring, m_strName, Name);
+	GETSET(wstring, m_strName, Name);
 
 	virtual void init();
 	virtual void update();

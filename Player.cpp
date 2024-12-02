@@ -4,7 +4,6 @@
 #include "GameManager.h"
 
 Player::Player()
-    : m_Pos(5, 5)
 {
 }
 
@@ -18,30 +17,30 @@ void Player::init()
 
 void Player::update()
 {
-    if (KeyManager::GetInst()->GetKeyState(KEY_TYPE::LEFT) == KEY_STATE::HOLD)
+    if (KEY_HOLD(KEY_TYPE::LEFT))
     {
-        if (m_Pos.x > 0)
+        if (IsInScreen(m_Pos.x - 1, m_Pos.y))
         {
             m_Pos.x--;
         }
     }
-    if (KeyManager::GetInst()->GetKeyState(KEY_TYPE::RIGHT) == KEY_STATE::HOLD)
+    if (KEY_HOLD(KEY_TYPE::RIGHT))
     {
-        if (m_Pos.x < 20)
+        if (IsInScreen(m_Pos.x + 1, m_Pos.y))
         {
             m_Pos.x++;
         }
     }
-    if (KeyManager::GetInst()->GetKeyState(KEY_TYPE::UP) == KEY_STATE::HOLD)
+    if (KEY_HOLD(KEY_TYPE::UP))
     {
-        if (m_Pos.y > 0)
+        if (IsInScreen(m_Pos.x, m_Pos.y - 1))
         {
             m_Pos.y--; 
         }
     }
-    if (KeyManager::GetInst()->GetKeyState(KEY_TYPE::DOWN) == KEY_STATE::HOLD)
+    if (KEY_HOLD(KEY_TYPE::DOWN))
     {
-        if (m_Pos.y < 15)
+        if (IsInScreen(m_Pos.x, m_Pos.y + 1))
         {
             m_Pos.y++;
         }
@@ -50,5 +49,6 @@ void Player::update()
 
 void Player::render()
 {
+    GameManager::GetInst()->ChangeRenderColor(ConsoleRenderingColor::BLUE, ConsoleRenderingType::TEXT);
 	GameManager::GetInst()->PrintScreen(m_Pos.x, m_Pos.y, L"a");
 }

@@ -5,18 +5,20 @@ public:
 	Object();
 	virtual ~Object();
 
-private:
+protected:
 	wstring m_strName;
 
-	Vec2 m_vPos;
+	Vec2 m_Pos;
 
 	bool m_bAlive;
 
 public:
-	GetSet(wstring, m_strName, strName);
-	GetSet(Vec2, m_vPos, Pos);
+	GETSET(wstring, m_strName, strName);
+	GETSET(Vec2, m_Pos, Pos);
 
 	bool IsDead() { return !m_bAlive; }
+
+	static bool IsInScreen(int _nx, int _ny);
 
 public:
 	virtual void init() {};

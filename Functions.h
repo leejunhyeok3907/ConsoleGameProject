@@ -13,5 +13,3 @@ void Safe_Delete_Vec(vector<T>& _vec)
 
 	_vec.clear();
 }
-
-void gotoxy(int _x, int _y);

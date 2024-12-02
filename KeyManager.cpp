@@ -34,8 +34,6 @@ void KeyManager::Init()
 
 void KeyManager::Update()
 {
-	HWND MainConsole = GameManager::GetInst()->GetConsoleHWND();
-
 	for (int i = 0; i < (UINT)KEY_TYPE::END; i++)
 	{
 		if (GetAsyncKeyState(g_arrVk[i]) & 0x8000)
@@ -65,21 +63,6 @@ void KeyManager::Update()
 			m_Keys[i].prevPushed = false;
 		}
 	}
-	//else
-	//{
-	//	for (int i = 0; i < (UINT)KEY_TYPE::END; i++)
-	//	{
-	//		if (m_Keys[i].state == KEY_STATE::TAP 
-	//			|| m_Keys[i].state == KEY_STATE::HOLD)
-	//		{
-	//			m_Keys[i].state = KEY_STATE::AWAY;
-	//		}
-	//		else if (m_Keys[i].state == KEY_STATE::AWAY)
-	//		{
-	//			m_Keys[i].state = KEY_STATE::NONE;
-	//		}
-	//	}
-	//}
 }
 
 void KeyManager::Render()

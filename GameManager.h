@@ -32,9 +32,11 @@ private:
 	void ReleaseScreen();
 
 private:
+	Vec2 ScreenSize = { 96, 32 };
+
 	int m_ScreenIndex = 0;
 
-	int m_DelayTime = 30;
+	int m_DelayTime = 10;
 
 	HWND m_Console = nullptr;
 
@@ -44,11 +46,13 @@ private:
 
 	bool m_GameLoop = true;
 
-	GetSet(int, m_ScreenIndex, ScreenIndex);
-
 public:
 	void ChangeTitle(const wstring& _str);
 
 	HWND GetConsoleHWND() const { return m_Console; }
+
+	HANDLE GetCurrentScreen() const { return m_Screen[m_ScreenIndex]; }
+
+	const Vec2& GetScreenSize() const { return ScreenSize; }
 };
 
