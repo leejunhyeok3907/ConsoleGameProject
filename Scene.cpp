@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Scene.h"
 #include "Object.h"
+#include "Functions.h"
 
 Scene::Scene()
 	: m_Player(nullptr)
@@ -68,9 +69,13 @@ void Scene::render()
 
 void Scene::DeleteGroup(GROUP_TYPE _eType)
 {
-	//Safe_Delete_Vec(m_Obj[(UINT)_eType]);
+	Safe_Delete_Vec(m_Obj[(UINT)_eType]);
 }
 
 void Scene::DeleteAll()
 {
+	for (UINT i = 0; i < (UINT)GROUP_TYPE::END; i++)
+	{
+		DeleteGroup((GROUP_TYPE)i);
+	}
 }

@@ -6,15 +6,15 @@ public:
 	virtual ~Object();
 
 private:
-	string m_strName;
+	wstring m_strName;
 
 	Vec2 m_vPos;
 
 	bool m_bAlive;
 
 public:
-	GetSet(string, m_strName, strName);
-	GetSet(Vec2, m_vPos, vPos);
+	GetSet(wstring, m_strName, strName);
+	GetSet(Vec2, m_vPos, Pos);
 
 	bool IsDead() { return !m_bAlive; }
 

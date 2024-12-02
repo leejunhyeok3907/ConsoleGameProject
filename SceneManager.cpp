@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "StartScene.h"
 
 SceneManager::SceneManager()
 	: m_arrScene{}
@@ -24,6 +25,10 @@ SceneManager::~SceneManager()
 
 void SceneManager::Init()
 {
+	m_arrScene[(UINT)SCENE_TYPE::START] = new StartScene;
+
+	m_CurScene = m_arrScene[(UINT)SCENE_TYPE::START];
+	m_CurScene->Enter();
 }
 
 void SceneManager::Update()

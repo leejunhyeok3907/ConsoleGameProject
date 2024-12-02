@@ -38,3 +38,30 @@ enum class KEY_STATE
 	HOLD,
 	AWAY,
 };
+
+enum class ConsoleRenderingColor
+{
+	UNKNOWN = -1,
+	BLACK,
+	DARKBLUE,
+	DARKGREEN,
+	DARKCYAN,
+	DARKRED,
+	DARKMAGENTA,
+	DARKYELLOW,
+	GRAY,
+	DARKGRAY,
+	BLUE,
+	GREEN,
+	CYAN,
+	RED,
+	MAGENTA,
+	YELLOW,
+	WHITE,
+};
+
+enum class ConsoleRenderingType
+{
+	TEXT=0,
+	BACKGROUND
+};

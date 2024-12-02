@@ -6,13 +6,12 @@ class Scene
 {
 private:
 	vector<Object*> m_Obj[(UINT)GROUP_TYPE::END];
-	wstring				m_strName;
+	wstring	m_strName;
 
 	Object* m_Player;
 
 public:
-	void SetName(const wstring& _strName) { m_strName = _strName; }
-	const wstring& GetName() { return m_strName; }
+	GetSet(wstring, m_strName, Name);
 
 	virtual void init();
 	virtual void update();

@@ -21,8 +21,14 @@ private:
 
 	void ClearScreen();
 
-	void PrintScreen(int _x, int _y, string _string);
+public:
+	void PrintScreen(int _x, int _y, wstring _string);
 
+	void MovePosition(int _x, int _y);
+
+	void ChangeRenderColor(ConsoleRenderingColor _Color, ConsoleRenderingType _Type);
+
+private:
 	void ReleaseScreen();
 
 private:
@@ -30,10 +36,19 @@ private:
 
 	int m_DelayTime = 30;
 
-	HANDLE m_Screen[2];
+	HWND m_Console = nullptr;
+
+	CONSOLE_SCREEN_BUFFER_INFO m_outputScreenBufferInfo;
+
+	HANDLE m_Screen[2] = { 0, };
 
 	bool m_GameLoop = true;
 
 	GetSet(int, m_ScreenIndex, ScreenIndex);
+
+public:
+	void ChangeTitle(const wstring& _str);
+
+	HWND GetConsoleHWND() const { return m_Console; }
 };
 

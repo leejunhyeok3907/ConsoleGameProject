@@ -2,6 +2,7 @@
 #include "GameManager.h"
 #include "Functions.h"
 #include "KeyManager.h"
+#include "SceneManager.h"
 
 GameManager::GameManager()
 {
@@ -52,22 +53,29 @@ void GameManager::Init()
     SetConsoleCursorInfo(m_Screen[0], &cci);
     SetConsoleCursorInfo(m_Screen[1], &cci);
 
+    m_Console = GetConsoleWindow();
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &m_outputScreenBufferInfo);
+
     //Initalize Managers
     KeyManager::GetInst()->Init();
+    SceneManager::GetInst()->Init();
+
 }
 
 void GameManager::Update()
 {
     //Managers Update
     KeyManager::GetInst()->Update();
+    SceneManager::GetInst()->Update();
 }
 
 void GameManager::Render()
 {
     ClearScreen();
-
     //Managers Render
     KeyManager::GetInst()->Render();
+    SceneManager::GetInst()->Render();
 
     DoubleBuffering();
 }
@@ -89,9 +97,11 @@ void GameManager::ClearScreen()
     COORD cd = { 0, 0 };
 
     FillConsoleOutputCharacter(m_Screen[m_ScreenIndex], ' ', 80 * 25, cd, &dw);
+
+    MovePosition(cd.X, cd.Y);
 }
 
-void GameManager::PrintScreen(int _x, int _y, string _string)
+void GameManager::PrintScreen(int _x, int _y, wstring _string)
 {
     DWORD dw;
     COORD CursorPosition = { (SHORT)_x, (SHORT)_y };
@@ -100,8 +110,41 @@ void GameManager::PrintScreen(int _x, int _y, string _string)
     WriteFile(m_Screen[m_ScreenIndex], _string.c_str(), (DWORD)_string.size(), &dw, NULL);
 }
 
+void GameManager::MovePosition(int _x, int _y)
+{
+    DWORD dw;
+    COORD CursorPosition = { (SHORT)_x, (SHORT)_y };
+
+    SetConsoleCursorPosition(m_Screen[m_ScreenIndex], CursorPosition);
+}
+
+void GameManager::ChangeRenderColor(ConsoleRenderingColor _Color, ConsoleRenderingType _Type)
+{
+    WORD attr = m_outputScreenBufferInfo.wAttributes;
+
+    if (_Type== ConsoleRenderingType::TEXT)
+    {
+        attr &= 0xFFF0;//하위 4비트만 가져오기
+        attr |= static_cast<WORD>(_Color);
+    }
+    else if (_Type == ConsoleRenderingType::BACKGROUND)
+    {
+        attr &= 0xFF0F;//상위 4비트만 가져오기
+        attr |= (static_cast<WORD>(_Color) << 4); //따라 상위 4비트만큼 이동
+    }
+
+    m_outputScreenBufferInfo.wAttributes = attr;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), m_outputScreenBufferInfo.wAttributes);
+}
+
 void GameManager::ReleaseScreen()
 {
     CloseHandle(m_Screen[0]);
     CloseHandle(m_Screen[1]);
 }
+
+void GameManager::ChangeTitle(const wstring& _str)
+{
+    SetWindowText(m_Console, _str.c_str());
+}
+
