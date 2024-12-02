@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <iostream>
+#include <stdio.h>
 
 #include <vector>
 #include <queue>
@@ -10,7 +11,6 @@ using namespace std;
 
 #include "Enums.h"
 #include "CustomStruct.h"
-#include "Functions.h"
 
 #define GetSet(Type, VarName, FuncName)\
 const Type& Get##FuncName() const{return VarName;}\

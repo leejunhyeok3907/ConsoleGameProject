@@ -1,14 +1,18 @@
 #pragma once
-class GameManager
+#include "Manager.h"
+
+class GameManager : public Manager
 {
 	SINGLE(GameManager);
 
 public:
-	void Init();
-
 	void Progress();
 
-	void Render();
+	virtual void Init() override;
+
+	virtual void Update() override;
+
+	virtual void Render() override;
 
 	void Release();
 
@@ -23,6 +27,8 @@ private:
 
 private:
 	int m_ScreenIndex = 0;
+
+	int m_DelayTime = 30;
 
 	HANDLE m_Screen[2];
 

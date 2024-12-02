@@ -1,5 +1,41 @@
 #include "pch.h"
 #include "GameManager.h"
+#include "Functions.h"
+#include "KeyManager.h"
+
+GameManager::GameManager()
+{
+
+}
+
+GameManager::~GameManager()
+{
+    Release();
+}
+
+void GameManager::Progress()
+{
+    unsigned int system_tick = GetTickCount64();
+
+    while (m_GameLoop)
+    {
+        unsigned int CurrentTick = GetTickCount64();
+
+        if (system_tick + m_DelayTime < CurrentTick)
+        {
+            system_tick = CurrentTick;
+
+            Update();
+
+            Render();
+
+            if (KeyManager::GetInst()->GetKeyState(KEY_TYPE::Q) == KEY_STATE::HOLD)
+            {
+                break;
+            }
+        }
+    }
+}
 
 void GameManager::Init()
 {
@@ -15,29 +51,30 @@ void GameManager::Init()
     cci.bVisible = FALSE;
     SetConsoleCursorInfo(m_Screen[0], &cci);
     SetConsoleCursorInfo(m_Screen[1], &cci);
+
+    //Initalize Managers
+    KeyManager::GetInst()->Init();
 }
 
-void GameManager::Progress()
+void GameManager::Update()
 {
-    while (m_GameLoop)
-    {
-        //Update Managers
-
-        Render();
-    }
-
-    Release();
+    //Managers Update
+    KeyManager::GetInst()->Update();
 }
 
 void GameManager::Render()
 {
     ClearScreen();
 
+    //Managers Render
+    KeyManager::GetInst()->Render();
+
     DoubleBuffering();
 }
 
 void GameManager::Release()
 {
+    ReleaseScreen();
 }
 
 void GameManager::DoubleBuffering()

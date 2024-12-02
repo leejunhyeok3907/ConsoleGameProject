@@ -16,3 +16,25 @@ enum class GROUP_TYPE
 	MONSTER,
 	END,
 };
+
+enum class KEY_TYPE
+{
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN,
+	Z,
+	X,
+	C,
+	Q,
+	SPACE,
+	END
+};
+
+enum class KEY_STATE
+{
+	NONE,
+	TAP,
+	HOLD,
+	AWAY,
+};
