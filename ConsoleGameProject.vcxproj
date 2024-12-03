@@ -138,12 +138,14 @@
     <ClCompile Include="ConsoleGameProject.cpp" />
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="Ground.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Stage01.cpp" />
     <ClCompile Include="StartScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +153,7 @@
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="Ground.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Object.h" />
@@ -158,6 +161,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Stage01.h" />
     <ClInclude Include="StartScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

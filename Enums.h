@@ -14,6 +14,8 @@ enum class GROUP_TYPE
 	DEFAULT,
 	PLAYER,
 	MONSTER,
+	GROUND,
+	UI,
 	END,
 };
 

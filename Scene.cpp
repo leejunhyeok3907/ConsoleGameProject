@@ -62,6 +62,11 @@ void Scene::render()
 			else
 			{
 				iter = m_Obj[i].erase(iter);
+
+				if (*iter)
+				{
+					delete (*iter);
+				}
 			}
 		}
 	}

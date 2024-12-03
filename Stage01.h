@@ -1,13 +1,13 @@
 #pragma once
 #include "Scene.h"
-class StartScene : public Scene
+class Stage01 : public Scene
 {
 private:
 	using SUPER = Scene;
 
 public:
-	StartScene();
-	virtual ~StartScene();
+	Stage01();
+	virtual ~Stage01();
 
 	virtual void init() override;
 	virtual void update() override;

@@ -39,7 +39,7 @@ void GameManager::Init()
 {
     char str[256];
     
-    sprintf_s(str, "mode con:cols=%d lines=%d", (int)ScreenSize.x, (int)ScreenSize.y);
+    sprintf_s(str, "mode con:cols=%d lines=%d", (int)m_ScreenSize.x, (int)m_ScreenSize.y);
 
     system(str);
 
@@ -61,7 +61,6 @@ void GameManager::Init()
     //Initalize Managers
     KeyManager::GetInst()->Init();
     SceneManager::GetInst()->Init();
-
 }
 
 void GameManager::Update()
@@ -74,6 +73,7 @@ void GameManager::Update()
 void GameManager::Render()
 {
     ClearScreen();
+
     //Managers Render
     KeyManager::GetInst()->Render();
     SceneManager::GetInst()->Render();
@@ -97,12 +97,12 @@ void GameManager::ClearScreen()
     DWORD dw;
     COORD cd = { 0, 0 };
 
-    FillConsoleOutputCharacter(GetCurrentScreen(), ' ', 120 * 45, cd, &dw);
+    FillConsoleOutputCharacter(GetCurrentScreen(), ' ', m_ScreenSize.x * m_ScreenSize.y, cd, &dw);
 
     MovePosition(cd.X, cd.Y);
 }
 
-void GameManager::PrintScreen(int _x, int _y, wstring _string)
+void GameManager::PrintScreen(int _x, int _y, string _string)
 {
     DWORD dw;
     COORD CursorPosition = { (SHORT)_x, (SHORT)_y };
@@ -138,6 +138,12 @@ void GameManager::ChangeRenderColor(ConsoleRenderingColor _Color, ConsoleRenderi
 
     m_outputScreenBufferInfo.wAttributes = attr;
     SetConsoleTextAttribute(GetCurrentScreen(), m_outputScreenBufferInfo.wAttributes);
+}
+
+void GameManager::ResumeRenderColor()
+{
+    ChangeRenderColor(ConsoleRenderingColor::WHITE, ConsoleRenderingType::TEXT);
+    ChangeRenderColor(ConsoleRenderingColor::BLACK, ConsoleRenderingType::BACKGROUND);
 }
 
 void GameManager::ReleaseScreen()

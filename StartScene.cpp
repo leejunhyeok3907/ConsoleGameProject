@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "StartScene.h"
 #include "Player.h"
+#include "GameManager.h"
+#include "SceneManager.h"
+#include "KeyManager.h"
 
 StartScene::StartScene()
 {
@@ -16,27 +19,28 @@ void StartScene::init()
 
 void StartScene::update()
 {
-	Scene::update();
+	SUPER::update();
+
+	if (KEY_TAP(KEY_TYPE::Z))
+	{
+		SceneManager::GetInst()->ChangeScene(SCENE_TYPE::STAGE_01);
+	}
 }
 
 void StartScene::render()
 {
-	Scene::render();
+	SUPER::render();
+
+	GameManager::GetInst()->PrintScreen(20.f, 5.f, "asdf");
 }
 
 void StartScene::Enter()
 {
-	Object* Obj = new Player;
-
-	Obj->SetstrName(L"Player");
-	Obj->SetPos(Vec2(5.f, 5.f));
-
-	AddObject(Obj, GROUP_TYPE::PLAYER);
-
-	RegisterPlayer(Obj);
 }
 
 void StartScene::Exit()
 {
+	
+
 	DeleteAll();
 }

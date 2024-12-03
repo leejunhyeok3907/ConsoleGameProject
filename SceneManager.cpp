@@ -2,6 +2,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "StartScene.h"
+#include "Stage01.h"
 
 SceneManager::SceneManager()
 	: m_arrScene{}
@@ -26,6 +27,8 @@ SceneManager::~SceneManager()
 void SceneManager::Init()
 {
 	m_arrScene[(UINT)SCENE_TYPE::START] = new StartScene;
+
+	m_arrScene[(UINT)SCENE_TYPE::STAGE_01] = new Stage01;
 
 	m_CurScene = m_arrScene[(UINT)SCENE_TYPE::START];
 	m_CurScene->Enter();

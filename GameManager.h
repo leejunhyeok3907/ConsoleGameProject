@@ -22,17 +22,19 @@ private:
 	void ClearScreen();
 
 public:
-	void PrintScreen(int _x, int _y, wstring _string);
+	void PrintScreen(int _x, int _y, string _string);
 
 	void MovePosition(int _x, int _y);
 
 	void ChangeRenderColor(ConsoleRenderingColor _Color, ConsoleRenderingType _Type);
 
+	void ResumeRenderColor();
+
 private:
 	void ReleaseScreen();
 
 private:
-	Vec2 ScreenSize = { 96, 32 };
+	Vec2 m_ScreenSize = { 96, 32 };
 
 	int m_ScreenIndex = 0;
 
@@ -53,6 +55,6 @@ public:
 
 	HANDLE GetCurrentScreen() const { return m_Screen[m_ScreenIndex]; }
 
-	const Vec2& GetScreenSize() const { return ScreenSize; }
+	const Vec2& GetScreenSize() const { return m_ScreenSize; }
 };
 
