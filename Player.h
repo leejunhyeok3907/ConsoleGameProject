@@ -38,5 +38,19 @@ private:
 	int WeaponIndex = 2;
 
 	Vec2 UnderCollision;
+
+	Vec2 CollisionOffset = { 1, 2 };
+
+	ULONGLONG HitTick;
+	bool Hited = false;
+
+	ConsoleRenderingColor CurrentPlayerColor;
+	ConsoleRenderingColor PlayerDefaultColor = ConsoleRenderingColor::DARKBLUE;
+	ConsoleRenderingColor PlayerHitColor = ConsoleRenderingColor::RED;
+
+public:
+	bool Collision(Vec2 _Pos);
+
+	void OnHited(float _Damage);
 };
 

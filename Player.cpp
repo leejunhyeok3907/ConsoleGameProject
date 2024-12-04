@@ -17,6 +17,7 @@ Player::~Player()
 
 void Player::init()
 {
+    CurrentPlayerColor = PlayerDefaultColor;
 }
 
 void Player::update()
@@ -88,6 +89,15 @@ void Player::update()
         }
     }
 
+    if (Hited)
+    {
+        if (HitTick + 100 <= Current_tick)
+        {
+            Hited = false;
+            CurrentPlayerColor = PlayerDefaultColor;
+        }
+    }
+
     UnderCollision = Vec2(m_Pos.x, m_Pos.y + 1);
 
     const vector<Object*>& Grounds = SceneManager::GetInst()->GetCurScene()->
@@ -133,7 +143,7 @@ void Player::update()
 
 void Player::render()
 {
-    GameManager::GetInst()->ChangeRenderColor(ConsoleRenderingColor::BLUE, ConsoleRenderingType::TEXT);
+    GameManager::GetInst()->ChangeRenderColor(CurrentPlayerColor, ConsoleRenderingType::TEXT);
 	
 
     DrawCharacter();
@@ -236,5 +246,22 @@ void Player::CheckAttack()
                 }
             }
         }
+    }
+}
+
+bool Player::Collision(Vec2 _Pos)
+{
+    return (_Pos.x >= m_Pos.x - CollisionOffset.x && _Pos.x <= m_Pos.x + CollisionOffset.x
+        && _Pos.y >= m_Pos.y - CollisionOffset.y && _Pos.y <= m_Pos.y);
+}
+
+void Player::OnHited(float _Damage)
+{
+    if (Hited == false)
+    {
+        Hited = true;
+        HitTick = GetTickCount64();
+
+        CurrentPlayerColor = PlayerHitColor;
     }
 }

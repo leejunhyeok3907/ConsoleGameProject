@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Ground.h"
+#include "Player.h"
 
 Monster::Monster()
 {
@@ -21,6 +22,8 @@ void Monster::init()
     MoveTick = GetTickCount64();
 
     NextMove = rand() % 1400 + 200;
+
+    CurrentColor = DefaultColor;
 }
 
 void Monster::update()
@@ -43,13 +46,6 @@ void Monster::update()
                 Gravity = 0.f;
             }
         }
-    }
-    else
-    {
-        JumpTick = ReduceJumpPowerTick = Current_tick;
-        Jumping = true;
-        JumpPower = 0.25f;
-        Gravity = 0.f;
     }
 
     if (Jumping)
@@ -83,6 +79,7 @@ void Monster::update()
         {
             Hited = false;
             Jumping = false;
+            CurrentColor = DefaultColor;
         }
     }
 
@@ -127,11 +124,38 @@ void Monster::update()
 
         m_Pos.y += Gravity;
     }
+
+    Player* p = dynamic_cast<Player*>(Target);
+
+    if (p)
+    {
+        bool Check = false;
+
+        for (int i = 0; i <= CollisionOffset.y; i++)
+        {
+            for (int j = -CollisionOffset.x; j <= CollisionOffset.x; j++)
+            {
+                if (p->Collision({ m_Pos.x + j, m_Pos.y + i }))
+                {
+                    p->OnHited(50.f);
+
+                    Check = true;
+                    break;
+                }
+            }
+
+            if (Check) break;
+        }
+    }
 }
 
 void Monster::render()
 {
+    GameManager::GetInst()->ChangeRenderColor(CurrentColor, ConsoleRenderingType::TEXT);
+
     DrawCharacter();
+
+    GameManager::GetInst()->ResumeRenderColor();
 }
 
 void Monster::DrawCharacter()
@@ -163,5 +187,12 @@ void Monster::OnHited(float _Damage)
         Hited = true;
         HitTick = GetTickCount64();
         MoveTick = GetTickCount64();
+
+        JumpTick = ReduceJumpPowerTick = GetTickCount64();
+        Jumping = true;
+        JumpPower = 0.55f;
+        Gravity = 0.f;
+
+        CurrentColor = HitColor;
     }
 }

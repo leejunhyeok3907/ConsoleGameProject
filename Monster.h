@@ -35,6 +35,10 @@ private:
 	ULONGLONG HitTick;
 	bool Hited = false;
 
+	ConsoleRenderingColor CurrentColor;
+	ConsoleRenderingColor DefaultColor = ConsoleRenderingColor::CYAN;
+	ConsoleRenderingColor HitColor = ConsoleRenderingColor::RED;
+
 public:
 	bool Collision(Vec2 _Pos);
 

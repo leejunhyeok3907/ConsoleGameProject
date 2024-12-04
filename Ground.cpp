@@ -25,6 +25,8 @@ void Ground::update()
 
 void Ground::render()
 {
+	GameManager::GetInst()->ChangeRenderColor(ConsoleRenderingColor::DARKGREEN, ConsoleRenderingType::TEXT);
+
 	for (int y = m_LeftTop.y; y <= m_RightBottom.y; y++)
 	{
 		for (int x = m_LeftTop.x; x <= m_RightBottom.x; x += 2)
@@ -32,6 +34,8 @@ void Ground::render()
 			GameManager::GetInst()->PrintScreen(x, y, "бр");
 		}
 	}
+
+	GameManager::GetInst()->ResumeRenderColor();
 }
 
 bool Ground::IsCollision(const Vec2& _pos)
