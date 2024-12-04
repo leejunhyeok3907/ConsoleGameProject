@@ -28,6 +28,8 @@ public:
 
 	void RegisterPlayer(Object* _Player) { m_Player = _Player; }
 
+	Object* GetPlayer() const { return m_Player; }
+
 	const vector<Object*>& GetGroupObject(GROUP_TYPE _eType)
 	{
 		return m_Obj[(UINT)_eType];

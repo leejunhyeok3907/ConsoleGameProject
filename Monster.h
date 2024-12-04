@@ -1,28 +1,19 @@
 #pragma once
 #include "Object.h"
-class Player : public Object
+class Monster : public Object
 {
 public:
-	Player();
-	virtual ~Player();
+	Monster();
+	virtual ~Monster();
 
 	virtual void init() override;
 	virtual void update() override;
 	virtual void render() override;
 
 private:
-	void DrawCharacter();
-	void CheckAttack();
+	virtual void DrawCharacter();
 
 private:
-	bool m_DirRight = false;
-	bool m_EquipWeapon = false;
-
-	string WeaponArr[2][3] = {
-		{"----", "+--->", "-]===>"},
-		{"----", "<---+", "<===[-"}
-	};
-
 	float MaxGravity = 0.6f;
 	float Gravity = 0.4f;
 	bool IsGrounded = false;
@@ -32,11 +23,21 @@ private:
 	ULONGLONG ReduceJumpPowerTick;
 	float JumpPower;
 
-	ULONGLONG AttackTick;
-	bool Attacking = false;
-
-	int WeaponIndex = 2;
+	ULONGLONG MoveTick;
+	int NextMove = 2400;
 
 	Vec2 UnderCollision;
+
+	Vec2 CollisionOffset = { 2, 1 };
+
+	Object* Target;
+
+	ULONGLONG HitTick;
+	bool Hited = false;
+
+public:
+	bool Collision(Vec2 _Pos);
+
+	void OnHited(float _Damage);
 };
 

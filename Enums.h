@@ -12,9 +12,9 @@ enum class SCENE_TYPE
 enum class GROUP_TYPE
 {
 	DEFAULT,
-	PLAYER,
 	MONSTER,
 	GROUND,
+	PLAYER,
 	UI,
 	END,
 };
