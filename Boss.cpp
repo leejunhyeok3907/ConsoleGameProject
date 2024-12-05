@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Monster.h"
+#include "Boss.h"
 #include "KeyManager.h"
 #include "GameManager.h"
 #include "SceneManager.h"
@@ -7,15 +7,15 @@
 #include "Ground.h"
 #include "Player.h"
 
-Monster::Monster()
+Boss::Boss()
 {
 }
 
-Monster::~Monster()
+Boss::~Boss()
 {
 }
 
-void Monster::init()
+void Boss::init()
 {
     Target = SceneManager::GetInst()->GetCurScene()->GetPlayer();
 
@@ -23,10 +23,18 @@ void Monster::init()
 
     NextMove = rand() % 1400 + 200;
 
+    DefaultColor = ConsoleRenderingColor::DARKMAGENTA;
+
     CurrentColor = DefaultColor;
+
+    CollisionOffset = Vec2({ 5, 3 });
+
+    Health = 800.f;
+
+    SpawnTimer = GetTickCount64();
 }
 
-void Monster::update()
+void Boss::update()
 {
     if (Health <= 0.f)
     {
@@ -41,7 +49,7 @@ void Monster::update()
     {
         if (MoveTick + NextMove <= Current_tick)
         {
-            NextMove = (rand() % 1400) + 600;
+            NextMove = (rand() % 2400) + 600;
 
             MoveTick = Current_tick;
 
@@ -49,7 +57,7 @@ void Monster::update()
             {
                 JumpTick = ReduceJumpPowerTick = Current_tick;
                 Jumping = true;
-                JumpPower = 0.45f;
+                JumpPower = 1.5f;
                 Gravity = 0.f;
             }
         }
@@ -88,7 +96,6 @@ void Monster::update()
         if (HitTick + 100 <= Current_tick)
         {
             Hited = false;
-            Jumping = false;
             CurrentColor = DefaultColor;
         }
     }
@@ -99,6 +106,25 @@ void Monster::update()
         {
             DamageTextExist = false;
         }
+    }
+
+    if (SpawnTimer + NextSpawnRate <= Current_tick)
+    {
+        int SpawnNum = (rand() % 3) + 1;
+
+        for (int i = 0; i < SpawnNum; i++)
+        {
+            Object* Obj = new Monster;
+
+            Obj->SetstrName(L"Slime");
+            Obj->SetPos(m_Pos);
+
+            Obj->init();
+            SceneManager::GetInst()->GetCurScene()->AddObject(Obj, GROUP_TYPE::MONSTER);
+        }
+
+        NextSpawnRate = (rand() % 3000) + 2000;
+        SpawnTimer = Current_tick;
     }
 
     UnderCollision = Vec2(m_Pos.x, m_Pos.y + 1);
@@ -132,7 +158,7 @@ void Monster::update()
     {
         if (Gravity < MaxGravity)
         {
-            Gravity += 0.02f;
+            Gravity += 0.01f;
 
             if (Gravity > MaxGravity)
             {
@@ -167,7 +193,7 @@ void Monster::update()
     }
 }
 
-void Monster::render()
+void Boss::render()
 {
     GameManager::GetInst()->ChangeRenderColor(CurrentColor, ConsoleRenderingType::TEXT);
 
@@ -184,36 +210,27 @@ void Monster::render()
     GameManager::GetInst()->ResumeRenderColor();
 }
 
-void Monster::DrawCharacter()
+void Boss::DrawCharacter()
 {
     if (IsGrounded)
     {
-        GameManager::GetInst()->PrintScreen(m_Pos.x - 2, m_Pos.y - 2, " ___ ");
-        GameManager::GetInst()->PrintScreen(m_Pos.x - 2, m_Pos.y - 1, "(   )");
-        GameManager::GetInst()->PrintScreen(m_Pos.x - 2, m_Pos.y,     "-----");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y - 4, " _________  ");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y - 3, "(         ) ");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y - 2, "(         ) ");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y - 1, "(         ) ");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y,     " ---------  ");
     }
     else
     {
-        GameManager::GetInst()->PrintScreen(m_Pos.x - 2, m_Pos.y - 2, " ___ ");
-        GameManager::GetInst()->PrintScreen(m_Pos.x - 2, m_Pos.y - 1, "[   ]");
-        GameManager::GetInst()->PrintScreen(m_Pos.x - 2, m_Pos.y,     "'---'");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y - 4, " _________ ");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y - 3, "[         ]");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y - 2, "[         ]");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y - 1, "[         ]");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 5, m_Pos.y,     "'---------'");
     }
 }
 
-int Monster::GetRandomDamage(int _MaxDamage, int _MinDamage)
-{
-    int Damage = rand() % static_cast<int>(_MaxDamage - _MinDamage) + _MinDamage;
-
-    return Damage;
-}
-
-bool Monster::Collision(Vec2 _Pos)
-{
-    return (_Pos.x >= m_Pos.x - CollisionOffset.x && _Pos.x <= m_Pos.x + CollisionOffset.x
-        && _Pos.y >= m_Pos.y - CollisionOffset.y && _Pos.y <= m_Pos.y);
-}
-
-void Monster::OnHited(int _Damage)
+void Boss::OnHited(int _Damage)
 {
     ULONGLONG Current_tick = GetTickCount64();
 
@@ -229,7 +246,7 @@ void Monster::OnHited(int _Damage)
 
         JumpTick = ReduceJumpPowerTick = Current_tick;
         Jumping = true;
-        JumpPower = 0.55f;
+        JumpPower = 0.85f;
         Gravity = 0.f;
 
         Health -= _Damage;

@@ -13,6 +13,10 @@ public:
 private:
 	void DrawCharacter();
 	void CheckAttack();
+	void CheckSkillHit();
+	int GetRandomDamage(int _MaxDamage, int _MinDamage);
+	bool CheckPlayerDead();
+	void KeyInput(int _CurrentTick);
 
 private:
 	bool m_DirRight = false;
@@ -22,6 +26,12 @@ private:
 		{"----", "+--->", "-]===>"},
 		{"----", "<---+", "<===[-"}
 	};
+
+	float MaxHealth = 200.f;
+	float Health = 200.f;
+
+	float MaxMana = 100.f;
+	float Mana = 100.f;
 
 	float MaxGravity = 0.6f;
 	float Gravity = 0.4f;
@@ -44,6 +54,25 @@ private:
 	ULONGLONG HitTick;
 	bool Hited = false;
 
+	ULONGLONG DeadTick;
+	bool PlayerDead = false;
+
+	ULONGLONG HitTextTick;
+	bool DamageTextExist = false;
+
+	int TakeDamage;
+	Vec2 HitedPos;
+
+	bool UseSkill = false;
+	bool IsCooltime = false;
+
+	bool EnableKeyInput = true;
+
+	ULONGLONG UseSkillTick;
+	ULONGLONG SkillMotionTick;
+	int SkillMotionIndex = 0;
+	ULONGLONG SkillCoolTime;
+
 	ConsoleRenderingColor CurrentPlayerColor;
 	ConsoleRenderingColor PlayerDefaultColor = ConsoleRenderingColor::DARKBLUE;
 	ConsoleRenderingColor PlayerHitColor = ConsoleRenderingColor::RED;
@@ -51,6 +80,9 @@ private:
 public:
 	bool Collision(Vec2 _Pos);
 
-	void OnHited(float _Damage);
+	void OnHited(int _Damage);
+
+	float GetHPRatio();
+	float GetMPRatio();
 };
 

@@ -10,10 +10,11 @@ public:
 	virtual void update() override;
 	virtual void render() override;
 
-private:
+protected:
 	virtual void DrawCharacter();
+	int GetRandomDamage(int _MaxDamage, int _MinDamage);
 
-private:
+protected:
 	float MaxGravity = 0.6f;
 	float Gravity = 0.4f;
 	bool IsGrounded = false;
@@ -34,6 +35,14 @@ private:
 
 	ULONGLONG HitTick;
 	bool Hited = false;
+	Vec2 HitedPos;
+
+	ULONGLONG HitTextTick;
+	bool DamageTextExist = false;
+
+	int TakeDamage;
+
+	float Health = 150.f;
 
 	ConsoleRenderingColor CurrentColor;
 	ConsoleRenderingColor DefaultColor = ConsoleRenderingColor::CYAN;
@@ -42,6 +51,6 @@ private:
 public:
 	bool Collision(Vec2 _Pos);
 
-	void OnHited(float _Damage);
+	virtual void OnHited(int _Damage);
 };
 

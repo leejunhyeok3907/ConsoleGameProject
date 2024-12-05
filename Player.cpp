@@ -24,45 +24,18 @@ void Player::update()
 {
     ULONGLONG Current_tick = GetTickCount64();
 
-    if (KEY_HOLD(KEY_TYPE::LEFT))
+    if (CheckPlayerDead())
     {
-        if (IsInScreen(m_Pos.x - 0.5f, m_Pos.y))
+        if (PlayerDead == false)
         {
-            m_DirRight = false;
-            m_Pos.x -= 0.5f;
-        }
-    }
-    if (KEY_HOLD(KEY_TYPE::RIGHT))
-    {
-        if (IsInScreen(m_Pos.x + 0.5f, m_Pos.y))
-        {
-            m_DirRight = true;
-            m_Pos.x += 0.5f;
-        }
-    }
-    if (KEY_HOLD(KEY_TYPE::UP))
-    {
-        if (IsInScreen(m_Pos.x, m_Pos.y - 1))
-        {
-            if (Jumping == false && IsGrounded)
-            {
-                JumpTick = ReduceJumpPowerTick = Current_tick;
-                Jumping = true;
-                JumpPower = 0.75f;
-                Gravity = 0.f;
-            }
+            PlayerDead = true;
+            DeadTick = Current_tick;
         }
     }
 
-    if (KEY_TAP(KEY_TYPE::Z))
+    if (PlayerDead == false && EnableKeyInput)
     {
-        if (Attacking == false)
-        {
-            AttackTick = Current_tick;
-            Attacking = true;
-
-            CheckAttack();
-        }
+        KeyInput(Current_tick);
     }
 
     if (Jumping)
@@ -91,10 +64,51 @@ void Player::update()
 
     if (Hited)
     {
-        if (HitTick + 100 <= Current_tick)
+        if (HitTick + 300 <= Current_tick)
         {
-            Hited = false;
+            if(UseSkill==false) Hited = false;
             CurrentPlayerColor = PlayerDefaultColor;
+        }
+    }
+
+    if (DamageTextExist)
+    {
+        if (HitTextTick + 200 <= Current_tick)
+        {
+            DamageTextExist = false;
+        }
+    }
+
+    if (UseSkill)
+    {
+        CheckSkillHit();
+
+        if (SkillMotionTick + 100 <= Current_tick)
+        {
+            {
+                Health += 1.f;
+                Mana -= 1.f;
+
+                if (Health > MaxHealth) Health = MaxHealth;
+            }
+
+            SkillMotionIndex = (SkillMotionIndex + 1) % 2;
+        }
+
+        if (UseSkillTick + 1000 <= Current_tick
+            || Mana <= 0.f)
+        {
+            UseSkill = false;
+            Hited = false;
+            EnableKeyInput = true;
+        }
+    }
+
+    if (IsCooltime)
+    {
+        if (SkillCoolTime + 2000 <= Current_tick)
+        {
+            IsCooltime = false;
         }
     }
 
@@ -139,6 +153,14 @@ void Player::update()
 
         m_Pos.y += Gravity;
     }
+
+    if (PlayerDead)
+    {
+        if (DeadTick + 2000 <= Current_tick)
+        {
+            SceneManager::GetInst()->ChangeScene(SCENE_TYPE::GAMEOVER);
+        }
+    }
 }
 
 void Player::render()
@@ -149,75 +171,118 @@ void Player::render()
     DrawCharacter();
     //GameManager::GetInst()->PrintScreen(m_Pos.x, m_Pos.y, L"a");
 
+    if (DamageTextExist)
+    {
+        string str = to_string(TakeDamage);
+
+        GameManager::GetInst()->ChangeRenderColor(ConsoleRenderingColor::RED, ConsoleRenderingType::TEXT);
+        GameManager::GetInst()->PrintScreen(HitedPos.x, HitedPos.y - 3, str);
+    }
+
     GameManager::GetInst()->ResumeRenderColor();
 }
 
 void Player::DrawCharacter()
 {
-    if (Attacking == false)
+    if (PlayerDead)
     {
-        if (m_DirRight == false)
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 3, m_Pos.y,     ")-/-O");
+    }
+    else if (UseSkill)
+    {
+        if (SkillMotionIndex == 0)
         {
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, " o|) ");
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " _^_ ");
+            GameManager::GetInst()->ChangeRenderColor(ConsoleRenderingColor::DARKGREEN, ConsoleRenderingType::TEXT);
+
+            GameManager::GetInst()->PrintScreen(m_Pos.x - 4, m_Pos.y - 3, "^^^^^^^^^^^");
+            GameManager::GetInst()->PrintScreen(m_Pos.x - 4, m_Pos.y - 2, "(         )");
+            GameManager::GetInst()->PrintScreen(m_Pos.x - 4, m_Pos.y - 1, "{         }");
+            GameManager::GetInst()->PrintScreen(m_Pos.x - 4, m_Pos.y,     "(         )");
         }
-        else
+        else if (SkillMotionIndex == 1)
         {
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, " (|o ");
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " _^_ ");
+            GameManager::GetInst()->ChangeRenderColor(ConsoleRenderingColor::DARKMAGENTA, ConsoleRenderingType::TEXT);
+
+            GameManager::GetInst()->PrintScreen(m_Pos.x - 4, m_Pos.y - 3, "***********");
+            GameManager::GetInst()->PrintScreen(m_Pos.x - 4, m_Pos.y - 2, "{         }");
+            GameManager::GetInst()->PrintScreen(m_Pos.x - 4, m_Pos.y - 1, "(         )");
+            GameManager::GetInst()->PrintScreen(m_Pos.x - 4, m_Pos.y,     "{         }");
         }
 
-        if (!m_EquipWeapon)
-        {
-            string drawWeapon = WeaponArr[m_DirRight ? 0 : 1][2];
-            int AddOffset = 0;
+        GameManager::GetInst()->ChangeRenderColor(ConsoleRenderingColor::YELLOW, ConsoleRenderingType::TEXT);
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, "-{|}-");
+        GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " -^- ");
 
-            if (m_DirRight)
-            {
-                AddOffset = 3;
-            }
-            else
-            {
-                AddOffset = drawWeapon.size() * -1;
-            }
-
-            GameManager::GetInst()->PrintScreen(m_Pos.x + AddOffset, m_Pos.y - 1, drawWeapon);
-        }
+        GameManager::GetInst()->ResumeRenderColor();
     }
     else
     {
-        if (m_DirRight == false)
+        if (Attacking == false)
         {
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, "o=|) ");
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " _^_ ");
-        }
-        else
-        {
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, " (|=o");
-            GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " _^_ ");
-        }
-
-        if (!m_EquipWeapon)
-        {
-            string drawWeapon = WeaponArr[m_DirRight ? 0 : 1][WeaponIndex];
-            int AddOffset = 0;
-
-            if (m_DirRight)
+            if (m_DirRight == false)
             {
-                AddOffset = 4;
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, " o|) ");
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " _^_ ");
             }
             else
             {
-                AddOffset = -1 + drawWeapon.size() * -1;
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, " (|o ");
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " _^_ ");
             }
 
-            GameManager::GetInst()->PrintScreen(m_Pos.x + AddOffset, m_Pos.y - 1, drawWeapon);     
+            if (!m_EquipWeapon)
+            {
+                string drawWeapon = WeaponArr[m_DirRight ? 0 : 1][2];
+                int AddOffset = 0;
+
+                if (m_DirRight)
+                {
+                    AddOffset = 3;
+                }
+                else
+                {
+                    AddOffset = drawWeapon.size() * -1;
+                }
+
+                GameManager::GetInst()->PrintScreen(m_Pos.x + AddOffset, m_Pos.y - 1, drawWeapon);
+            }
         }
-    }
+        else
+        {
+            if (m_DirRight == false)
+            {
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, "o=|) ");
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " _^_ ");
+            }
+            else
+            {
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 2, "  O  ");
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y - 1, " (|=o");
+                GameManager::GetInst()->PrintScreen(m_Pos.x - 1, m_Pos.y,     " _^_ ");
+            }
+
+            if (!m_EquipWeapon)
+            {
+                string drawWeapon = WeaponArr[m_DirRight ? 0 : 1][WeaponIndex];
+                int AddOffset = 0;
+
+                if (m_DirRight)
+                {
+                    AddOffset = 4;
+                }
+                else
+                {
+                    AddOffset = -1 + drawWeapon.size() * -1;
+                }
+
+                GameManager::GetInst()->PrintScreen(m_Pos.x + AddOffset, m_Pos.y - 1, drawWeapon);
+            }
+        }
+    }    
 }
 
 void Player::CheckAttack()
@@ -241,10 +306,117 @@ void Player::CheckAttack()
 
                 if (Mon->Collision({ m_Pos.x + AddOffset + RangeOffset, m_Pos.y }))
                 {
-                    Mon->OnHited(50.f);
+                    Mon->OnHited((rand() % 25) + 25.f);
                     break;
                 }
             }
+        }
+    }
+}
+
+void Player::CheckSkillHit()
+{
+    const vector<Object*>& Monsters = SceneManager::GetInst()->GetCurScene()->
+        GetGroupObject(GROUP_TYPE::MONSTER);
+
+    for (auto Obj : Monsters)
+    {
+        Monster* Mon = dynamic_cast<Monster*>(Obj);
+
+        if (Mon)
+        {
+            bool HitCheck = false;
+
+            for (int i = -5; i < 5; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    if (Mon->Collision({ m_Pos.x + i, m_Pos.y + j }))
+                    {
+                        Mon->OnHited(25.f);
+                        HitCheck = true;
+                        break;
+                    }
+                }
+                if (HitCheck) break;
+            }
+        }
+    }
+}
+
+int Player::GetRandomDamage(int _MaxDamage, int _MinDamage)
+{
+    int Damage = rand() % static_cast<int>(_MaxDamage - _MinDamage) + _MinDamage;
+
+    return Damage;
+}
+
+bool Player::CheckPlayerDead()
+{
+    bool Check = IsInScreen(m_Pos.x, m_Pos.y) == false
+        || Health <= 0;
+
+    return Check;
+}
+
+void Player::KeyInput(int _CurrentTick)
+{
+    if (KEY_HOLD(KEY_TYPE::LEFT))
+    {
+        if (IsInScreen(m_Pos.x - 0.5f, m_Pos.y))
+        {
+            m_DirRight = false;
+            m_Pos.x -= 0.5f;
+        }
+    }
+    if (KEY_HOLD(KEY_TYPE::RIGHT))
+    {
+        if (IsInScreen(m_Pos.x + 0.5f, m_Pos.y))
+        {
+            m_DirRight = true;
+            m_Pos.x += 0.5f;
+        }
+    }
+    if (KEY_HOLD(KEY_TYPE::UP))
+    {
+        if (IsInScreen(m_Pos.x, m_Pos.y - 1))
+        {
+            if (Jumping == false && IsGrounded)
+            {
+                JumpTick = ReduceJumpPowerTick = _CurrentTick;
+                Jumping = true;
+                JumpPower = 0.75f;
+                Gravity = 0.f;
+            }
+        }
+    }
+
+    if (KEY_TAP(KEY_TYPE::Z))
+    {
+        if (Attacking == false)
+        {
+            AttackTick = _CurrentTick;
+            Attacking = true;
+
+            CheckAttack();
+        }
+    }
+
+    if (KEY_TAP(KEY_TYPE::X))
+    {
+        if (IsCooltime == false && Mana > 0.f)
+        {
+            IsCooltime = true;
+            UseSkill = true;
+            Hited = true;
+
+            EnableKeyInput = false;
+
+            UseSkillTick = _CurrentTick;
+            SkillCoolTime = _CurrentTick;
+
+            SkillMotionTick = _CurrentTick;
+            SkillMotionIndex = 0;
         }
     }
 }
@@ -255,13 +427,31 @@ bool Player::Collision(Vec2 _Pos)
         && _Pos.y >= m_Pos.y - CollisionOffset.y && _Pos.y <= m_Pos.y);
 }
 
-void Player::OnHited(float _Damage)
+void Player::OnHited(int _Damage)
 {
-    if (Hited == false)
+    if (Hited == false && PlayerDead == false)
     {
         Hited = true;
         HitTick = GetTickCount64();
 
+        Health -= _Damage;
+        TakeDamage = _Damage;
+
+        HitedPos = m_Pos;
+
         CurrentPlayerColor = PlayerHitColor;
+
+        HitTextTick = GetTickCount64();
+        DamageTextExist = true;
     }
+}
+
+float Player::GetHPRatio()
+{
+    return (Health / MaxHealth) * 10;
+}
+
+float Player::GetMPRatio()
+{
+    return (Mana / MaxMana) * 10;
 }

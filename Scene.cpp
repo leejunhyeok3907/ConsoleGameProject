@@ -61,12 +61,9 @@ void Scene::render()
 			}
 			else
 			{
-				iter = m_Obj[i].erase(iter);
+				m_DeadObj.push_back(*iter);
 
-				if (*iter)
-				{
-					delete (*iter);
-				}
+				iter = m_Obj[i].erase(iter);
 			}
 		}
 	}
@@ -83,4 +80,6 @@ void Scene::DeleteAll()
 	{
 		DeleteGroup((GROUP_TYPE)i);
 	}
+
+	Safe_Delete_Vec(m_DeadObj);
 }

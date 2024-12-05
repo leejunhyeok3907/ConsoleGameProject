@@ -6,6 +6,7 @@ class Scene
 {
 private:
 	vector<Object*> m_Obj[(UINT)GROUP_TYPE::END];
+	vector<Object*> m_DeadObj;
 	wstring	m_strName;
 
 	Object* m_Player;

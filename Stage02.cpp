@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Stage01.h"
+#include "Stage02.h"
 #include "Player.h"
 #include "GameManager.h"
 #include "SceneManager.h"
@@ -8,37 +8,31 @@
 #include "Monster.h"
 #include "PlayerUI.h"
 #include "Portal.h"
-#include "Boss.h"
 
-
-Stage01::Stage01()
+Stage02::Stage02()
 {
 }
 
-Stage01::~Stage01()
+Stage02::~Stage02()
 {
 }
 
-void Stage01::init()
+void Stage02::init()
 {
 	SUPER::init();
 }
 
-void Stage01::update()
+void Stage02::update()
 {
 	SUPER::update();
 }
 
-void Stage01::render()
+void Stage02::render()
 {
 	SUPER::render();
-
-	GameManager::GetInst()->PrintScreen(30.f, 10.f, "Key Menual");
-	GameManager::GetInst()->PrintScreen(30.f, 11.f, "Left:¡ç Right:¡æ Jump:¡è");
-	GameManager::GetInst()->PrintScreen(30.f, 12.f, "Attack: Z  Meditation : X");
 }
 
-void Stage01::Enter()
+void Stage02::Enter()
 {
 	Vec2 ScreenSize = GameManager::GetInst()->GetScreenSize();
 
@@ -54,18 +48,25 @@ void Stage01::Enter()
 	Obj = new PlayerUI;
 	AddObject(Obj, GROUP_TYPE::UI);
 
+	Obj = new Monster;
+
+	Obj->SetstrName(L"Slime");
+	Obj->SetPos(Vec2(65.f, 5.f));
+
+	AddObject(Obj, GROUP_TYPE::MONSTER);
+
 	Obj = new Ground(Vec2(0.f, ScreenSize.y - 3), Vec2(ScreenSize.x - 1, ScreenSize.y - 1));
 
 	AddObject(Obj, GROUP_TYPE::GROUND);
 
-	Obj = new Portal(Vec2(90.f, ScreenSize.y - 4), SCENE_TYPE::STAGE_02);
+	Obj = new Portal(Vec2(90.f, ScreenSize.y - 4), SCENE_TYPE::STAGE_03);
 
 	AddObject(Obj, GROUP_TYPE::PORTAL);
 
 	init();
 }
 
-void Stage01::Exit()
+void Stage02::Exit()
 {
 	DeleteAll();
 }

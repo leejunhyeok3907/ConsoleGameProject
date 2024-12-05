@@ -12,11 +12,9 @@ public:
 	virtual void update() override;
 	virtual void render() override;
 
-private:
+protected:
 	Vec2 m_LeftTop;
 	Vec2 m_RightBottom;
-
-	wstring m_GroundRender;
 
 public:
 	const Vec2& GetLeftTop() const { return m_LeftTop; }

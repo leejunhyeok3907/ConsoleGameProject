@@ -5,16 +5,22 @@ enum class SCENE_TYPE
 	START,
 	STAGE_01,
 	STAGE_02,
-
+	STAGE_03,
+	STAGE_04,
+	STAGE_05,
+	GAMEOVER,
+	WIN,
 	END,
 };
 
 enum class GROUP_TYPE
 {
 	DEFAULT,
+	PORTAL,
+	BOSS,
 	MONSTER,
-	GROUND,
 	PLAYER,
+	GROUND,
 	UI,
 	END,
 };
